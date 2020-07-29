@@ -22,7 +22,7 @@ class Product
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $product_name;
+    private $productName;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -66,12 +66,12 @@ class Product
 
     public function getProductName(): ?string
     {
-        return $this->product_name;
+        return $this->productName;
     }
 
-    public function setProductName(string $product_name): self
+    public function setProductName(string $productName): self
     {
-        $this->product_name = $product_name;
+        $this->productName = $productName;
 
         return $this;
     }

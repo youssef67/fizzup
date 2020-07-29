@@ -4,9 +4,16 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
+          <!-- Bootstrap core CSS -->
+  <link href="{{ asset("css/bootstrap.min.css") }}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{{ asset("css/main.css") }}" rel="stylesheet">
     </head>
     <body>
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
+          <script src="{{ asset("jquery/jquery.min.js") }}"></script>
+  <script src="{{ asset("js/bootstrap.bundle.min.js") }}"></script>
     </body>
 </html>
