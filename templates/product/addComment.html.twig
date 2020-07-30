@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un commentaire{% endblock %}
+
+{% block body %}
+<div class="container">
+    {{form_start(form)}}
+    <div class="row">
+        <div class="col-lg-12 col-md-12">
+            <div class="row">
+                <div class="col-lg-6 col-md-12">
+                    <img class="col img rounded" src="{{asset("images/" ~ product.image)}}">
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="col-lg-12 text-center">
+                        <h5 class="title-secondary">Prix de vente : {{ product.price }} € </h5>
+                    </div>
+                    <div class="text-center">
+                        <h3>{{ product.productName }}</h3>
+                    </div>
+                    <div>
+                        <p>Les plus :</p>
+                        <ul>
+                            <li>{{ product.carac1 }}</li>
+                            <li>{{ product.carac2 }}</li>
+                            <li>{{ product.carac3 }}</li>
+                        </ul>
+                    </div>
+                    <div class="m-3">
+                        <a href="{{ path("product", {'id' : product.id })}}" class="col btn btn-primary"><i
+                                class="fa fa-arrow-left" aria-hidden="true"></i>
+                            Retour à la page précédente</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 50px;">
+        <div class="col-lg-6 col-md-12">
+            <div>{{form_row(form.imageFile, {'label' : 'Votre photo'})}}</div>
+            <div>{{form_row(form.username, {'label' : 'Votre nom'})}}</div>
+            <div>{{form_row(form.email, {'label' : 'Votre adresse email'})}}</div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div>{{form_row(form.rating, {'label' : 'Notez le produit'})}}</div>
+            <div>{{form_row(form.commentary, {'label' : 'Commentaire'})}}</div>
+        </div>
+    </div>
+    <div class="row justify-content-md-center" style="margin-bottom: 50px;">
+        <div class="col-md-auto">
+            <input type="hidden" name="_token" value="{{csrf_token('SUP' ~ product.id)}}">
+            <input type="submit" class="btn btn-primary" value="Valider">
+        </div>
+    </div>
+    {{form_end(form)}}
+</div>
+{% endblock %}

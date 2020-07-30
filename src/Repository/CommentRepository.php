@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Comment;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Entity\Product;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @method Comment|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,32 +21,66 @@ class CommentRepository extends ServiceEntityRepository
         parent::__construct($registry, Comment::class);
     }
 
-    // /**
-    //  * @return Comment[] Returns an array of Comment objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getCommentsByProduct(Product $product)
     {
         return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('c.product = :val')
+            ->setParameter('val', $product->getId())
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Comment
+    public function getCommentsByStars(Product $product, $filter = null)
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        $req = $this->createQueryBuilder('c')
+            ->andWhere('c.product = :val')
+            ->setParameter('val', $product->getId());
+        if ($filter === 1) {
+            $req = $req->andWhere('c.rating = :value')
+                ->setParameter(':value', $filter);
+        }
+        if ($filter === 2) {
+
+            $req = $req->andWhere('c.rating = :value')
+                ->setParameter(':value', $filter);
+        }
+        if ($filter === 3) {
+
+            $req = $req->andWhere('c.rating = :value')
+                ->setParameter(':value', $filter);
+        }
+        if ($filter === 4) {
+
+            $req = $req->andWhere('c.rating = :value')
+                ->setParameter(':value', $filter);
+        }
+        if ($filter === 5) {
+
+            $req = $req->andWhere('c.rating = :value')
+                ->setParameter(':value', $filter);
+        }
+        $req = $req->getQuery();
+        return $req->getResult();
     }
-    */
+
+    public function getCommentsByAscAndDesc(Product $product, $filter = null)
+    {
+        $req = $this->createQueryBuilder('c')
+            ->andWhere('c.product = :val')
+            ->setParameter('val', $product->getId());
+        if ($filter === 'latest') {
+            $req = $req->orderBy('c.date', 'DESC');
+        }
+        if ($filter === 'oldest') {
+            $req = $req->orderBy('c.date', 'ASC');
+        }
+        if ($filter === 'best') {
+            $req = $req->orderBy('c.rating', 'DESC');
+        }
+        if ($filter === 'worst') {
+            $req = $req->orderBy('c.rating', 'ASC');
+        }
+        $req = $req->getQuery();
+        return $req->getResult();
+    }
 }

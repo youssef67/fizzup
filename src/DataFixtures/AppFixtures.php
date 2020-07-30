@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Comment;
 use App\Entity\Product;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
@@ -108,6 +109,28 @@ class AppFixtures extends Fixture
             ->setCarac2('Moteur SWM ')
             ->setCarac3('Deux modes de mise au point');
         $manager->persist($p11);
+
+
+        $faker = \Faker\Factory::create('fr_FR');
+
+        $products = [$p1, $p2, $p3, $p4, $p5, $p6, $p7, $p8, $p9, $p10, $p10, $p11];
+        $userName = ['stephanie', 'Julien', 'Jérome', 'Martin', 'Cindy', 'Marie', 'Leila', 'Najia', 'Victor', 'Sylvie', 'Nicolas', 'Zakaria', 'Maurizio'];
+        $images = ['visage1.jpg', 'visage2.jpg', 'visage3.jpg', 'visage4.jpg'];
+
+        foreach ($products as $product) {
+            $rand = rand(3, 5);
+            for ($i = 1; $i <= $rand; $i++) {
+                $comment = new Comment();
+                $comment->setEmail($faker->safeEmail())
+                    ->setUsername($faker->randomElement($userName))
+                    ->setRating($faker->numberBetween($min = 0, $max = 5))
+                    ->setCommentary($faker->text(255))
+                    ->setImage($faker->randomElement($images))
+                    ->setDate($faker->dateTime())
+                    ->setProduct($product);
+                $manager->persist($comment);
+            }
+        }
 
         $manager->flush();
     }

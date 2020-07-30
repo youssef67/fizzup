@@ -1,65 +1,128 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello ProductController!{% endblock %}
+{% block title %}Produit {{ product.productName }}{% endblock %}
 
 {% block body %}
-  <!-- Page Content -->
-  <div class="container">
+<div class="container">
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
     <div class="row">
-        <div class="col-lg-6 col-md-6">
-            <img class="img" src="{{asset("images/" ~ product.image)}}">
-            <h5 class="text-center">{{ product.price }} Euros </h5>
+        <div class="col-lg-6 col-md-12">
+            <div class="row">
+                <img class="col img" src="{{asset("images/" ~ product.image)}}">
+            </div>
+            <div class="row m-2 p-2">
+                <div class="col-lg-12 text-center">
+                    <h5 class="text-center title-secondary">Prix de vente : {{ product.price }} € </h5>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-6 col-md-6 mb-4">
-            <a href="#">{{ product.productName }}</a>
+        <div class="col-lg-6 col-md-12 mb-4">
+            <h3>{{ product.productName }}</h3>
             <p>Les plus :</p>
             <ul>
                 <li>{{ product.carac1 }}</li>
                 <li>{{ product.carac2 }}</li>
                 <li>{{ product.carac3 }}</li>
             </ul>
-        </div>
-    </div>
-    <div class="row d-flex justify-content-center mt-100 mb-100">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body text-center">
-                    <a class="btn btn-primary">Trier par date</a>
-                    <a class="btn btn-primary">Trier par note</a>
-                    <a class="btn btn-primary">Filtrer par note</a>
-                </div>
-                <div class="comment-widgets">
-                    <!-- Comment Row -->
-                    <div class="d-flex flex-row comment-row m-t-0">
-                        <div class="p-2"><img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583336/AAA/4.jpg" alt="user" width="50" class="rounded-circle"></div>
-                        <div class="comment-text w-100">
-                            <h6 class="font-medium">James Thomas</h6> <span class="m-b-15 d-block">This is awesome website. I would love to comeback again. </span>
-                            <div class="comment-footer"> <span class="text-muted float-right">April 14, 2019</span> <button type="button" class="btn btn-cyan btn-sm">Edit</button> <button type="button" class="btn btn-success btn-sm">Publish</button> <button type="button" class="btn btn-danger btn-sm">Delete</button> </div>
-                        </div>
-                    </div> <!-- Comment Row -->
-                    <div class="d-flex flex-row comment-row">
-                        <div class="p-2"><img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583319/AAA/3.jpg" alt="user" width="50" class="rounded-circle"></div>
-                        <div class="comment-text active w-100">
-                            <h6 class="font-medium">Michael Hussey</h6> <span class="m-b-15 d-block">Thanks bbbootstrap.com for providing such useful snippets. </span>
-                            <div class="comment-footer"> <span class="text-muted float-right">May 10, 2019</span> <button type="button" class="btn btn-cyan btn-sm">Edit</button> <button type="button" class="btn btn-success btn-sm">Publish</button> <button type="button" class="btn btn-danger btn-sm">Delete</button> </div>
-                        </div>
-                    </div> <!-- Comment Row -->
-                    <div class="d-flex flex-row comment-row">
-                        <div class="p-2"><img src="https://res.cloudinary.com/dxfq3iotg/image/upload/v1574583246/AAA/2.jpg" alt="user" width="50" class="rounded-circle"></div>
-                        <div class="comment-text w-100">
-                            <h6 class="font-medium">Johnathan Doeting</h6> <span class="m-b-15 d-block">Great industry leaders are not the real heroes of stock market. </span>
-                            <div class="comment-footer"> <span class="text-muted float-right">August 1, 2019</span> <button type="button" class="btn btn-cyan btn-sm">Edit</button> <button type="button" class="btn btn-success btn-sm">Publish</button> <button type="button" class="btn btn-danger btn-sm">Delete</button> </div>
-                        </div>
-                    </div>
-                </div> <!-- Card -->
+            <div>
+                Nombre de commentaires : {{ product.comments | length}}
+                {% set average = 0 %}
+                {% for arrayComment in product.comments %}
+                {% set average = average + arrayComment.rating %}
+                {% endfor %}
+                <p style="text-decoration: underline;">Note du produit :</p>
+                <div class="comment_rating font-weight-bold" data-rateyo-rating="{{ average / product.comments | length}}"></div>
+            </div>
+            <div class="m-3">
+                <a href="{{ path("add_comment", {'id' : product.id })}}" class="col btn btn-primary">Laisser un commentaire</a>
             </div>
         </div>
     </div>
-    
-</div>
-<footer class="py-5 bg-dark">
-    <div class="container">
-    <p class="m-0 text-center text-white">Réalisé par Youssef Moudni</p>
+    <div class="row d-flex justify-content-center mt-100 mb-100">
+        <div class="title-secondary" style="margin-bottom: 30px;">Commentaires</div>
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="row">
+                    <div class="input-group col-lg-6 mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="inputGroupSelect01">Trier par date ou note</label>
+                        </div>
+                        <select class="custom-select" onchange="location=this.value;">
+                            <option selected>Choisir</option>
+                            <option {% if filter == 'latest'%} selected {% endif %}
+                                value="{{ path("filter_ascAndDesc", {'id' : product.id, 'filter': 'latest'})}}">Du plus récent
+                            </option>
+                            <option {% if filter == 'oldest'%} selected {% endif %}
+                                value="{{ path("filter_ascAndDesc", {'id' : product.id, 'filter': 'oldest'})}}">Du plus ancien
+                            </option>
+                            <option {% if filter == 'best'%} selected {% endif %}
+                                value="{{ path("filter_ascAndDesc", {'id' : product.id, 'filter': 'best'})}}">De la meilleure
+                                note</option>
+                            <option {% if filter == 'worst'%} selected {% endif %}
+                                value="{{ path("filter_ascAndDesc", {'id' : product.id, 'filter': 'worst'})}}">De la pire note
+                            </option>
+                        </select>
+                    </div>
+                    <div class="input-group col-lg-6 mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="inputGroupSelect01">Filtrer par note</label>
+                        </div>
+                        <select class="custom-select" onchange="location=this.value;">
+                            <option selected>Choisir</option>
+                            <option {% if filter == 1 %} selected {% endif %}
+                                value="{{ path("filter_rating", {'id' : product.id, 'filter': 1 })}}">1 étoile
+                            </option>
+                            <option {% if filter == 2 %} selected {% endif %}
+                                value="{{ path("filter_rating", {'id' : product.id, 'filter': 2 })}}">2 étoiles
+                            </option>
+                            <option {% if filter == 3 %} selected {% endif %}
+                                value="{{ path("filter_rating", {'id' : product.id, 'filter': 3 })}}">3 étoiles
+                                note</option>
+                            <option {% if filter == 4 %} selected {% endif %}
+                                value="{{ path("filter_rating", {'id' : product.id, 'filter': 4 })}}">4 étoiles
+                            </option>
+                            <option {% if filter == 5 %} selected {% endif %}
+                                value="{{ path("filter_rating", {'id' : product.id, 'filter': 5 })}}">5 étoiles
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="comment-widgets">
+                    {% if comments is empty %}
+                    <div class="d-flex flex-row comment-row m-t-0">
+                        <div class="alert alert-info">Pas de commentaires trouvés</div>
+                    </div> 
+                    {% endif %}
+                    {% for comment in comments %}
+                    <div class="d-flex flex-row comment-row m-t-0">
+                        <div class="p-2"><img src="{{asset("images/"~ comment.image )}}" alt="user" width="50"
+                                class="rounded-circle"></div>
+                        <div class="comment-text w-100">
+                            <h6 class="font-medium">{{ comment.username}}</h6> <span
+                                class="m-b-15 d-block">{{ comment.commentary}}</span>
+                            <div class="comment-footer"> <span
+                                    class="text-muted float-right">{{ comment.date|date("m/d/Y") }}</span> </div>
+                            <p>Note du produit : </p>
+                            <div class="comment_rating" data-rateyo-rating="{{ comment.rating }}"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {# <div class="row navigation">
+                        <div class="w-90 mx-auto">
+                          <div>
+                            {{ knp_pagination_render(comments) }}
+                          </div>
+                        </div>
+                      </div> #}
+                </div>
+            </div>
+        </div>
     </div>
-</footer>
+
+</div>
 {% endblock %}

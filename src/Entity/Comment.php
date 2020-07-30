@@ -2,11 +2,23 @@
 
 namespace App\Entity;
 
-use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass=CommentRepository::class)
+ * @Vich\Uploadable
+ * @ORM\Entity
+ * @UniqueEntity(
+ *     fields={"email", "username"},
+ *     errorPath="email",
+ *     message="Cette email est déjà utilisé.",
+ *     errorPath="username",
+ *     message="Ce username est déjà utilisé.", 
+ * )
  */
 class Comment
 {
@@ -19,16 +31,19 @@ class Comment
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Email()
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(min=5, max=15, minMessage = "Le username doit faire 5 caractères minimum", maxMessage="Le username doit faire 15 caractères maximum")
      */
     private $username;
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\Range(min=1, max=5, notInRangeMessage="Merci de faire un choix parmi la liste proposée")
      */
     private $rating;
 
@@ -41,6 +56,11 @@ class Comment
      * @ORM\Column(type="string", length=255)
      */
     private $image;
+
+    /**
+     * @Vich\UploadableField(mapping="products", fileNameProperty="image")
+     */
+    private $imageFile;
 
     /**
      * @ORM\Column(type="datetime")
@@ -139,5 +159,20 @@ class Comment
         $this->product = $product;
 
         return $this;
+    }
+
+    /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
+     */
+    public function setImageFile(?File $imageFile = null): self
+    {
+        $this->imageFile = $imageFile;
+
+        return $this;
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
     }
 }
